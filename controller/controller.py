@@ -74,11 +74,11 @@ class MainController:
             pass
         else:
             self.tournament = self.dm.load_tournament(t_choice)
-        self.view.clear()
-        self.view.current_player_and_tournament(
+            self.view.clear()
+            self.view.current_player_and_tournament(
             self.player, self.tournament, self.current_menu
         )
-        self.view.show_players_in_tournament(self.tournament)
+            self.view.show_players_in_tournament(self.tournament)
 
     def run_start_tournament(self):
         self.view.clear()

@@ -284,7 +284,7 @@ class View:
         data = {
             "Nom": "Player",
             "Prénom": "x",
-            "Classement": 1000,
+            "Classement": 1500,
             "Date de naissance": datetime.date.today(),
             "Sexe": "",
         }

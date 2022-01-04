@@ -14,7 +14,7 @@ Le contrôleur principal(controller) s'appuie sur un contrôleur secondeur pour 
 
 Se placer dans le répertoire de travail (existant ou à créer).  
   
-Créer un clone du repository au moyen de la commande `git clone https://github.com/Olrio/OR_OC_ProjectsDAP`  
+Créer un clone du repository au moyen de la commande `git clone https://github.com/Olrio/P4.git`  
 
 Se placer dans le répertoire P4
 

@@ -66,7 +66,7 @@ class Tournament:
             self.players.remove(player)
 
     def sort_players(self, players):
-        s_players = sorted(players, key=lambda x: x.rank)  # by rank
+        s_players = sorted(players, key=lambda x: x.rank, reverse=True)  # by rank
         if self.rounds:
             s_players = sorted(
                 s_players, key=lambda x: self.rounds[-1].scores[x.ident], reverse=True

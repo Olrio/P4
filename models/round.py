@@ -40,7 +40,7 @@ class Round:
             self.matchs.append(match)
 
     def sort_players(self, players):
-        s_players = sorted(players, key=lambda x: x.rank)  # by rank
+        s_players = sorted(players, key=lambda x: x.rank, reverse=True)  # by rank
         s_players = sorted(s_players, key=lambda x: self.scores[x.ident], reverse=True)
         return s_players
 
@@ -63,7 +63,7 @@ class Round:
         while len(first_half) > len(second_half):
             second_half.append(first_half.pop())
         # players of the latest group are sorted by rank
-        second_half.sort(key=lambda x: x.rank)
+        second_half.sort(key=lambda x: x.rank, reverse = True)
         return first_half, second_half
 
     def scores_update(self, match):

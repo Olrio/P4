@@ -16,7 +16,7 @@ class DataLoader:
 
     @staticmethod
     def sorted_players_rank(players):
-        players = sorted(players, key=lambda x: x.rank)
+        players = sorted(players, key=lambda x: x.rank, reverse=True)
         return players
 
     @staticmethod
