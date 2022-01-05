@@ -53,10 +53,6 @@ class Tournament:
                 return
         self.rounds.append(n_round)
 
-    def add_match(self, match):
-        if match not in self.matchs:
-            self.matchs.append(match)
-
     def add_player(self, player):
         if player not in self.players:
             self.players.append(player)

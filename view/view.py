@@ -87,6 +87,14 @@ class View:
         return input("-->  ")
 
     @staticmethod
+    def change_player_rank_during_tournament(tournament):
+        for player in tournament.players:
+            print(f"{player} [{player.ident}]")
+        print("\nSaisissez le numéro du joueur dont vous voulez modifier le classement [x]")
+        print("Tapez [C] pour annuler")
+        return input("-->  ")
+
+    @staticmethod
     def display_all_tournaments(tournaments):
         print(f"Liste des tournois existants\n")
         print(f"{'Nom':<30}{'Ville':<20}{'Pays':<22}{'Début':<20}{'Statut'}\n")
@@ -194,7 +202,8 @@ class View:
             print(up + clrline)
             return user_input
 
-        return inline_input("Poursuivre [Y] ou revenir à l'accueil [N] ?").upper()
+        return inline_input("Poursuivre [Y], Modifier le classement d'un joueur [E]"
+                            " ou revenir à l'accueil [N] ?").upper()
 
     @staticmethod
     def show_matchs_of_the_round(tournament):
@@ -223,6 +232,7 @@ class View:
 
         print("\nSaisissez le numéro du match pour entrer les résultats")
         print("Tapez [Y] pour valider ces résultats et passer à la suite")
+        print("Tapez [E] pour modifier le classement d'un joueur")
         print("Tapez [N] pour revenir à l'accueil")
         return input("-->  ")
 
@@ -281,13 +291,14 @@ class View:
 
     @staticmethod
     def get_data_new_player():
-        data = {
+        data = dict()
+        data.update({
             "Nom": "Player",
             "Prénom": "x",
             "Classement": 1500,
             "Date de naissance": datetime.date.today(),
             "Sexe": "",
-        }
+        })
         print("Veuillez saisir les informations du nouveau joueur :")
         for item in data.items():
             if item[0] in ["Date de naissance"]:

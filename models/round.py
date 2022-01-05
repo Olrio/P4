@@ -63,7 +63,7 @@ class Round:
         while len(first_half) > len(second_half):
             second_half.append(first_half.pop())
         # players of the latest group are sorted by rank
-        second_half.sort(key=lambda x: x.rank, reverse = True)
+        second_half.sort(key=lambda x: x.rank, reverse=True)
         return first_half, second_half
 
     def scores_update(self, match):

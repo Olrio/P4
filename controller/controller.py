@@ -76,8 +76,8 @@ class MainController:
             self.tournament = self.dm.load_tournament(t_choice)
             self.view.clear()
             self.view.current_player_and_tournament(
-            self.player, self.tournament, self.current_menu
-        )
+                self.player, self.tournament, self.current_menu
+            )
             self.view.show_players_in_tournament(self.tournament)
 
     def run_start_tournament(self):
@@ -125,7 +125,7 @@ class MainController:
         # display players participating in the tournament
         # players are sorted by score then by rank
         self.show_players_in_tournament(tournament)
-        self.resume_or_back_home()
+        self.resume_or_back_home(tournament)
         # creating matchs for the first round
         if len(tournament.rounds) == 1 and len(tournament.rounds[-1].matchs) == 0:
             self.dm.create_matchs_swiss_first_round(tournament)
@@ -135,13 +135,13 @@ class MainController:
                 self.matchs_of_the_round(tournament)
         # display ranking at the end of the round
         self.show_players_in_tournament(tournament)
-        self.resume_or_back_home()
+        self.resume_or_back_home(tournament)
         # other rounds
         self.run_swiss_following_rounds(tournament)
 
     def matchs_of_the_round(self, tournament):
         choice = ""
-        valid_choice = ["N", "Y"]
+        valid_choice = ["N", "Y", "E"]
         for match in tournament.rounds[-1].matchs:
             if match.data[1][0]:
                 valid_choice.append(match.ident[2])
@@ -156,6 +156,8 @@ class MainController:
                 tournament.rounds[-1], "end", tournament.rounds[-1].end
             )
             self.run()
+        elif choice.upper() == "E":
+            self.change_player_rank_during_tournament(tournament)
         elif choice.upper() == "Y":
             # check if a result for every match exists
             for match in tournament.rounds[-1].matchs:
@@ -176,6 +178,20 @@ class MainController:
         for match in tournament.rounds[-1].matchs:
             if match.ident[2] == choice:
                 self.result_of_a_match(match, tournament)
+
+    def change_player_rank_during_tournament(self, tournament):
+        self.view.clear()
+        choice = ""
+        valid_choices = ["C"]
+        valid_choices.extend(player.ident for player in tournament.players)
+        while choice.upper() not in valid_choices:
+            choice = self.view.change_player_rank_during_tournament(tournament)
+        if choice.upper() == "C":
+            pass
+        else:
+            self.player = self.dm.players[choice]
+            self.run_edit_player()
+        return
 
     def result_of_a_match(self, match, tournament):
         choice = ""
@@ -227,12 +243,14 @@ class MainController:
         tournament.players = tournament.rounds[-1].sort_players(tournament.players)
         self.view.show_players_in_tournament(tournament, text)
 
-    def resume_or_back_home(self):
+    def resume_or_back_home(self, tournament):
         choice = ""
-        while choice not in ["Y", "N"]:
+        while choice not in ["Y", "N", "E"]:
             choice = self.view.resume_or_back_home()
         if choice == "N":
             self.run()
+        elif choice.upper() == "E":
+            self.change_player_rank_during_tournament(tournament)
 
     def run_swiss_following_rounds(self, tournament):
         round_status = ""
@@ -252,7 +270,7 @@ class MainController:
             if round_status == "in progress":
                 self.matchs_of_the_round(tournament)
             self.show_players_in_tournament(tournament)
-            self.resume_or_back_home()
+            self.resume_or_back_home(tournament)
             if len(tournament.rounds) == tournament.nb_rounds:
                 break
 

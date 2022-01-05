@@ -1,6 +1,4 @@
-# OR_OC_ProjectsDAP
-
-## Projet P4 : Application de gestion d'un tournoi d'échecs
+# Projet P4 : Application de gestion d'un tournoi d'échecs
 
 ### Présentation du script
 
@@ -25,3 +23,6 @@ Activer cet environnement virtuel  avec : `source env/bin/activate`
 Y installer les modules nécessaires à partir du fichier *requirements.txt* : `pip install -r requirements.txt` 
 
 Lancer l'exécution du programme *chess.py* au moyen de la commande : `python chess.py`  
+
+NOTE : Ce dépôt comprend les dernières versions du projet P4.
+Les précédentes peuvent être consultées dans le dépôt : https://github.com/Olrio/OR_OC_ProjectsDAP

@@ -55,17 +55,10 @@ class DBLoaderSaver:
     def remove_db(self, data):
         """remove serialized object from database"""
         if isinstance(data, Player):
-            data.birthdate = data.birthdate.strftime("%Y-%m-%d")
             self.db.table("chess_players").remove(self.query.ident == data.ident)
         elif isinstance(data, Tournament):
-            data.date_start = data.date_start.strftime("%Y-%m-%d")
-            data.date_end = data.date_end.strftime("%Y-%m-%d")
             self.db.table("chess_tournaments").remove(self.query.ident == data.ident)
         elif isinstance(data, Round):
-            if data.start:
-                data.start = data.start.strftime("%Y-%m-%d %H:%M:%S")
-            if data.end:
-                data.end = data.end.strftime("%Y-%m-%d %H:%M:%S")
             key_round = list(data.ident)
             self.db.table("chess_rounds").remove(self.query.ident == key_round)
         elif isinstance(data, Match):
