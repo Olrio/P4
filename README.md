@@ -33,7 +33,7 @@ Lorsque le programme est lancé, l'utilisateur peut choisir entre trois menus.
 
 La gestion d'un tournoi est accessible via le menu Tournoi ou le menu Joueur (après sélection d'un tournoi).
 
-###Base de données :
+### Base de données :
 
 Toutes les informations liées aux joueurs et aux tournois sont enregistrées dans une base de données (fichier *data/db.json*)
 
