@@ -35,9 +35,11 @@ class DataManager:
             t_round = self.crud.retrieve_round(round_raw)
             for match in t_round.matchs:
                 match = tuple(match)
-                t_round.matchs[t_round.matchs.index(match)] = self.matchs.get(match)
+                t_round.matchs[t_round.matchs.index(match)] = \
+                    self.matchs.get(match)
             for player in t_round.players:
-                t_round.players[t_round.players.index(player)] = self.players.get(
+                t_round.players[t_round.players.index(player)] = \
+                    self.players.get(
                     player
                 )
             self.rounds[t_round.ident] = t_round
@@ -46,15 +48,18 @@ class DataManager:
         for tournament_raw in tournaments_serialized:
             tournament = self.crud.retrieve_tournament(tournament_raw)
             for player in tournament.players:
-                tournament.players[tournament.players.index(player)] = self.players[
+                tournament.players[tournament.players.index(player)] = \
+                    self.players[
                     player
                 ]
             for player in tournament.singleton:
-                tournament.singleton[tournament.singleton.index(player)] = self.players[
+                tournament.singleton[tournament.singleton.index(player)] = \
+                    self.players[
                     player
                 ]
             for t_round in tournament.rounds:
-                tournament.rounds[tournament.rounds.index(t_round)] = self.rounds[
+                tournament.rounds[tournament.rounds.index(t_round)] = \
+                    self.rounds[
                     t_round
                 ]
             self.tournaments[tournament.ident] = tournament
@@ -119,7 +124,8 @@ class DataManager:
         self.db.save_db(t_round)
         # update tournament containing round in database
         # replace round instance by round ident
-        save_db_tournament_rounds = [t_round.ident for t_round in tournament.rounds]
+        save_db_tournament_rounds = [
+            t_round.ident for t_round in tournament.rounds]
         self.db.update_db(tournament, "rounds", save_db_tournament_rounds)
         return tournament
 
@@ -160,8 +166,10 @@ class DataManager:
             )
         # update tournament containing round in database
         # replace round instance by round ident
-        save_db_rounds_matchs = [match.ident for match in tournament.rounds[-1].matchs]
-        self.db.update_db(tournament.rounds[-1], "matchs", save_db_rounds_matchs)
+        save_db_rounds_matchs = [
+            match.ident for match in tournament.rounds[-1].matchs]
+        self.db.update_db(
+            tournament.rounds[-1], "matchs", save_db_rounds_matchs)
 
     def update_match(self, match):
         match.data[0][0] = match.data[0][0].ident
@@ -190,11 +198,13 @@ class DataManager:
         )
         # saving singletons in database
         self.db.update_db(
-            tournament, "singleton", [player.ident for player in tournament.singleton]
+            tournament, "singleton", [
+                player.ident for player in tournament.singleton]
         )
         # generating matchs of the first round
         for player1, player2 in zip(halves[0], halves[1]):
-            match = self.create_match(self.matchs, player1, player2, tournament)
+            match = self.create_match(
+                self.matchs, player1, player2, tournament)
             tournament.rounds[0].add_match(match)
             self.save_match(tournament, match)
         # manage floating player if number of players is odd
@@ -230,10 +240,14 @@ class DataManager:
             appairing = 0
             match = None
 
-            while appairing == 0:  # a player can't play twice against the same opponent
+            # a player can't play twice against the same opponent
+            while appairing == 0:
                 flag = 0
                 match = self.create_match(
-                    self.matchs, first_players[0], second_players[x], tournament
+                    self.matchs,
+                    first_players[0],
+                    second_players[x],
+                    tournament
                 )
                 for t_round in tournament.rounds:
                     for past_match in t_round.matchs:
@@ -245,7 +259,8 @@ class DataManager:
                         ):
                             if (
                                 len(first_players) > 2
-                            ):  # if no other possibility, player will play twice an opponent
+                            ):  # if no other possibility,
+                                # player will play twice an opponent
                                 x += 1
                                 flag = 1
                                 del self.matchs[match.ident]

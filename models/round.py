@@ -10,7 +10,8 @@ class Round:
     def __init__(self, name=None, ident=None):
         """ensemble des parties jouées durant une ronde"""
         self.name = name
-        self.scores = None  # dict of identifiants of the players in the round and their score in the round
+        self.scores = None  # dict of identifiants of the players in the round
+        # and their score in the round
         self.players = None
         self.matchs = None
         self.ident = ident
@@ -40,8 +41,10 @@ class Round:
             self.matchs.append(match)
 
     def sort_players(self, players):
-        s_players = sorted(players, key=lambda x: x.rank, reverse=True)  # by rank
-        s_players = sorted(s_players, key=lambda x: self.scores[x.ident], reverse=True)
+        s_players = sorted(
+            players, key=lambda x: x.rank, reverse=True)  # by rank
+        s_players = sorted(
+            s_players, key=lambda x: self.scores[x.ident], reverse=True)
         return s_players
 
     @staticmethod

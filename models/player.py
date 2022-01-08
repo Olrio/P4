@@ -9,7 +9,8 @@ class Player:
         self.ident = None
 
     def __str__(self):
-        return f"{self.lastname:<12}{self.firstname:<15}{self.rank:<10}{self.birthdate.strftime('%Y-%m-%d'):<20}"
+        return f"{self.lastname:<12}{self.firstname:<15}" \
+               f"{self.rank:<10}{self.birthdate.strftime('%Y-%m-%d'):<20}"
 
     @staticmethod
     def get_translation_fr(item):

@@ -6,9 +6,6 @@ from models.match import Match
 
 
 class DataLoader:
-    def __init__(self):
-        pass
-
     @staticmethod
     def sorted_players_alpha(players):
         players = sorted(players, key=lambda x: x.lastname)
@@ -34,20 +31,26 @@ class DBLoaderSaver:
         """stores data in TinyDB as dicts"""
         if isinstance(data, Player):
             dict_player_to_save = data.__dict__.copy()
-            dict_player_to_save["birthdate"] = data.birthdate.strftime("%Y-%m-%d")
+            dict_player_to_save["birthdate"] = \
+                data.birthdate.strftime("%Y-%m-%d")
             self.db.table("chess_players").insert(dict_player_to_save)
         elif isinstance(data, Tournament):
             dict_tournament_to_save = data.__dict__.copy()
-            dict_tournament_to_save["date_start"] = data.date_start.strftime("%Y-%m-%d")
-            dict_tournament_to_save["date_end"] = data.date_end.strftime("%Y-%m-%d")
+            dict_tournament_to_save["date_start"] = \
+                data.date_start.strftime("%Y-%m-%d")
+            dict_tournament_to_save["date_end"] = \
+                data.date_end.strftime("%Y-%m-%d")
             self.db.table("chess_tournaments").insert(dict_tournament_to_save)
         elif isinstance(data, Round):
             dict_round_to_save = data.__dict__.copy()
-            dict_round_to_save["start"] = data.start.strftime("%Y-%m-%d %H:%M:%S")
+            dict_round_to_save["start"] = \
+                data.start.strftime("%Y-%m-%d %H:%M:%S")
             # replace player instance by player ident
-            dict_round_to_save["players"] = [player.ident for player in data.players]
+            dict_round_to_save["players"] = \
+                [player.ident for player in data.players]
             if data.end:
-                dict_round_to_save["end"] = data.end.strftime("%Y-%m-%d %H:%M:%S")
+                dict_round_to_save["end"] = \
+                    data.end.strftime("%Y-%m-%d %H:%M:%S")
             self.db.table("chess_rounds").insert(dict_round_to_save)
         else:
             self.db.table("chess_matchs").insert(data.__dict__)
@@ -55,9 +58,11 @@ class DBLoaderSaver:
     def remove_db(self, data):
         """remove serialized object from database"""
         if isinstance(data, Player):
-            self.db.table("chess_players").remove(self.query.ident == data.ident)
+            self.db.table("chess_players").remove(
+                self.query.ident == data.ident)
         elif isinstance(data, Tournament):
-            self.db.table("chess_tournaments").remove(self.query.ident == data.ident)
+            self.db.table("chess_tournaments").remove(
+                self.query.ident == data.ident)
         elif isinstance(data, Round):
             key_round = list(data.ident)
             self.db.table("chess_rounds").remove(self.query.ident == key_round)
@@ -89,16 +94,6 @@ class DBLoaderSaver:
             self.db.table("chess_matchs").update(
                 {param: new_value}, self.query.ident == list(data.ident)
             )
-
-    def save_db_all(self, data):
-        """stores all data in TinyDB"""
-        players_table = self.db.table("chess_players")
-        players_table.truncate()
-        players_table.insert_multiple(data)
-
-    def load_db(self):
-        data = self.db.all()
-        return data
 
     def load_db_all(self, table_name):
         data = self.db.table(table_name).all()

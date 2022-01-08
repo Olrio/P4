@@ -1,6 +1,9 @@
 """
 manage CRUD operations for following objects
 Tournament
+Player
+Round
+Match
 """
 
 import datetime
@@ -12,9 +15,6 @@ from models.match import Match
 
 
 class Crud:
-    def __init__(self):
-        pass
-
     @staticmethod
     def create_tournament(data, tournaments):
         """create a new tournament from data"""
@@ -102,7 +102,8 @@ class Crud:
                 rounds[r_ident].add_player_score(player.ident)
         else:
             for player in rounds[r_ident].players:
-                rounds[r_ident].scores[player.ident] = tournament.rounds[-1].scores[
+                rounds[r_ident].scores[player.ident] = \
+                    tournament.rounds[-1].scores[
                     player.ident
                 ]
         rounds[r_ident].matchs = list()
@@ -120,7 +121,8 @@ class Crud:
                 if item[1]:
                     t_round.set_new_value(
                         item[0],
-                        datetime.datetime.strptime(item[1], "%Y-%m-%d %H:%M:%S"),
+                        datetime.datetime.strptime(item[1],
+                                                   "%Y-%m-%d %H:%M:%S"),
                     )
                 else:
                     t_round.set_new_value(item[0], item[1])
@@ -132,7 +134,8 @@ class Crud:
         return t_round
 
     @staticmethod
-    def create_match(matchs, player1, player2, tournament, score1=0.0, score2=0.0):
+    def create_match(matchs, player1, player2, tournament,
+                     score1=0.0, score2=0.0):
         num_match = 1
         for t_round in tournament.rounds:
             num_match += len(t_round.matchs)
@@ -152,7 +155,8 @@ class Crud:
         match = Match()
         for item in db_source.items():
             if item[0] == "ident":
-                match.set_new_value(item[0], (item[1][0], item[1][1], item[1][2]))
+                match.set_new_value(item[0],
+                                    (item[1][0], item[1][1], item[1][2]))
             else:
                 match.set_new_value(item[0], tuple(item[1]))
         return match

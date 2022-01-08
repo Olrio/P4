@@ -15,10 +15,10 @@ class Tournament:
         self.control_time = None  # bullet, blitz or rapid
         self.description = None  # tournament director's comments
         self.system = None  # "swiss" by default
-        self.nb_rounds = None  # number of rounds in the tournament  = 4 by default
+        self.nb_rounds = None  # number of rounds in the tournament (default 4)
         self.rounds = None  # list of round  instances
         self.players = None  # list of players instances
-        self.singleton = None  # list of floating players when number of players is odd
+        self.singleton = None  # list of floating players
 
     def __str__(self):
         return (
@@ -62,9 +62,11 @@ class Tournament:
             self.players.remove(player)
 
     def sort_players(self, players):
-        s_players = sorted(players, key=lambda x: x.rank, reverse=True)  # by rank
+        s_players = sorted(
+            players, key=lambda x: x.rank, reverse=True)  # by rank
         if self.rounds:
             s_players = sorted(
-                s_players, key=lambda x: self.rounds[-1].scores[x.ident], reverse=True
+                s_players,
+                key=lambda x: self.rounds[-1].scores[x.ident], reverse=True
             )
         return s_players

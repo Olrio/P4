@@ -1,6 +1,6 @@
 import datetime
 
-from models.menu import *
+from models.menu import get_menus
 from view.view import View
 from controller.datamanager import DataManager
 from dateutil import parser
@@ -21,32 +21,25 @@ class MainController:
         self.tournament = None  # current tournament
         self.view = View()
 
-    @staticmethod
-    def get_menus(menus):
-        for menu in list_menus:
-            menus.update({menu[0]: Menu()})
-        for menu in list_menus:
-            eval(menu[1])
-
     def setup(self):
         self.dm.get_database()
-        self.get_menus(self.menus)
+        get_menus(self.menus)
+        # launching program
+        self.current_menu = self.menus["home"]
         self.run()
 
     def run(self):
-        # launching program
-        self.current_menu = self.menus["home"]
         while True:
             choice = ""
-            while choice.upper() not in self.current_menu.choices.keys():
+            while choice not in self.current_menu.choices.keys():
                 eval(self.current_menu.run)
                 for valid_choice in self.current_menu.choices.items():
                     print(valid_choice[1][0])
-                choice = input("Choisissez une option : ")
-            if choice.upper() == "Q":
+                choice = input("Choisissez une option : ").upper()
+            if choice == "Q":
                 exit()
             else:
-                self.current_menu = self.current_menu.choices[choice.upper()][1]
+                self.current_menu = self.current_menu.choices[choice][1]
 
     def run_home(self):
         self.view.home(self.player, self.tournament, self.current_menu)
@@ -103,7 +96,12 @@ class MainController:
             else:
                 # the program verify if the tournament has already started
                 # and resume at current round
-                if len(self.tournament.rounds) <= 1:
+                if self.tournament.status == "ended":
+                    self.view.tournament_ended(self.tournament)
+                    self.view.press_key()
+                    self.current_menu = self.menus["tournament"]
+                    self.run()
+                elif len(self.tournament.rounds) <= 1:
                     self.run_swiss_first_round(self.tournament)
                 else:
                     self.run_swiss_following_rounds(self.tournament)
@@ -127,7 +125,8 @@ class MainController:
         self.show_players_in_tournament(tournament)
         self.resume_or_back_home(tournament)
         # creating matchs for the first round
-        if len(tournament.rounds) == 1 and len(tournament.rounds[-1].matchs) == 0:
+        if len(tournament.rounds) == 1 \
+                and len(tournament.rounds[-1].matchs) == 0:
             self.dm.create_matchs_swiss_first_round(tournament)
         # manage matchs of the first round
         for match in tournament.rounds[-1].matchs:
@@ -140,42 +139,43 @@ class MainController:
         self.run_swiss_following_rounds(tournament)
 
     def matchs_of_the_round(self, tournament):
+        t_round = tournament.rounds[-1]
         choice = ""
         valid_choice = ["N", "Y", "E"]
-        for match in tournament.rounds[-1].matchs:
+        for match in t_round.matchs:
             if match.data[1][0]:
                 valid_choice.append(match.ident[2])
         while choice.upper() not in valid_choice:
             choice = self.view.show_matchs_of_the_round(tournament)
         if choice.upper() == "N":
-            for match in tournament.rounds[-1].matchs:
+            for match in t_round.matchs:
                 if match.data[0][1] == 0 and match.data[1][1] == 0:
                     self.run()
-            tournament.rounds[-1].get_end_time()
+            t_round.get_end_time()
             self.dm.update_round(
-                tournament.rounds[-1], "end", tournament.rounds[-1].end
+                t_round, "end", t_round.end
             )
             self.run()
         elif choice.upper() == "E":
             self.change_player_rank_during_tournament(tournament)
         elif choice.upper() == "Y":
             # check if a result for every match exists
-            for match in tournament.rounds[-1].matchs:
+            for match in t_round.matchs:
                 if match.data[0][1] == 0.0 and match.data[1][0] is None:
                     match.data[0][1] = 1.0  # singleton marks 1 point
-                    tournament.rounds[-1].scores[match.data[0][0].ident] += 1
+                    t_round.scores[match.data[0][0].ident] += 1
                     self.dm.update_match(match)
                     self.dm.update_round(
-                        tournament.rounds[-1], "scores", tournament.rounds[-1].scores
+                        t_round, "scores", t_round.scores
                     )
                 if match.data[0][1] == 0.0 and match.data[1][1] == 0.0:
                     self.view.some_results_missing(tournament)
                     self.matchs_of_the_round(tournament)
-            tournament.rounds[-1].get_end_time()
+            t_round.get_end_time()
             self.dm.update_round(
-                tournament.rounds[-1], "end", tournament.rounds[-1].end
+                t_round, "end", t_round.end
             )
-        for match in tournament.rounds[-1].matchs:
+        for match in t_round.matchs:
             if match.ident[2] == choice:
                 self.result_of_a_match(match, tournament)
 
@@ -205,7 +205,8 @@ class MainController:
         if choice.upper() == "C":
             self.matchs_of_the_round(tournament)
             return
-        # check if a result has already been entered for this match. If yes, reset scores
+        # check if a result has already been entered for this match.
+        # If yes, reset scores
         if match.data[0][1] != 0 or match.data[1][1] != 0:
             tournament.rounds[-1].scores_reset(match)
         if choice.upper() == "N":
@@ -222,25 +223,28 @@ class MainController:
         self.matchs_of_the_round(tournament)
 
     def show_players_in_tournament(self, tournament):
-        text = f"pour la ronde {tournament.rounds[-1].name}"
-        for match in tournament.rounds[-1].matchs:
-            if match.data[0][1] == 0 and match.data[1][1] == 0:  # round not ended
-                text = f"pour la ronde {tournament.rounds[-1].name}"
+        t_round = tournament.rounds[-1]
+        text = f"pour la ronde {t_round.name}"
+        for match in t_round.matchs:
+            # check if round not ended
+            if match.data[0][1] == 0 and match.data[1][1] == 0:
+                text = f"pour la ronde {t_round.name}"
                 break
-            if isinstance(tournament.rounds[-1].end, datetime.datetime):
+            if isinstance(t_round.end, datetime.datetime):
                 text = (
-                    f"à l'issue de la ronde {tournament.rounds[-1].name}"
-                    f" - Fin de la ronde :{tournament.rounds[-1].end.strftime('%Y-%m-%d  %H:%M:%S')}"
+                    f"à l'issue de la ronde {t_round.name}"
+                    f" - Fin de la ronde :"
+                    f"{t_round.end.strftime('%Y-%m-%d  %H:%M:%S')}"
                 )
             else:
                 text = (
-                    f"à l'issue de la ronde {tournament.rounds[-1].name}"
-                    f" - Fin de la ronde :{tournament.rounds[-1].end}"
+                    f"à l'issue de la ronde {t_round.name}"
+                    f" - Fin de la ronde :{t_round.end}"
                 )
-        tournament.rounds[-1].players = tournament.rounds[0].sort_players(
+        t_round.players = tournament.rounds[0].sort_players(
             tournament.rounds[-1].players
         )
-        tournament.players = tournament.rounds[-1].sort_players(tournament.players)
+        tournament.players = t_round.sort_players(tournament.players)
         self.view.show_players_in_tournament(tournament, text)
 
     def resume_or_back_home(self, tournament):
@@ -261,6 +265,8 @@ class MainController:
                     break
                 else:
                     round_status = "ended"
+            if round_status == "ended" and not tournament.rounds[-1].end:
+                tournament.rounds[-1].get_end_time()
             if (
                 round_status == "ended"
                 and len(tournament.rounds) < tournament.nb_rounds
@@ -271,7 +277,10 @@ class MainController:
                 self.matchs_of_the_round(tournament)
             self.show_players_in_tournament(tournament)
             self.resume_or_back_home(tournament)
-            if len(tournament.rounds) == tournament.nb_rounds:
+            if len(tournament.rounds) == tournament.nb_rounds and\
+                    round_status == "ended":
+                if not tournament.rounds[-1].end:
+                    tournament.rounds[-1].get_end_time()
                 break
 
     def run_create_tournament(self):
@@ -287,10 +296,12 @@ class MainController:
         if choice.upper() == "N":
             pass
         elif choice.upper() == "Y":
-            new_tournament = self.dm.create_tournament(data, self.dm.tournaments)
+            new_tournament = \
+                self.dm.create_tournament(data, self.dm.tournaments)
             if new_tournament is None:
                 self.view.alert_creating_an_existing_tournament(
-                    data["Nom"], data["Ville"], data["Pays"], data["Date de début"]
+                    data["Nom"], data["Ville"],
+                    data["Pays"], data["Date de début"]
                 )
             else:
                 self.tournament = new_tournament
@@ -355,13 +366,14 @@ class MainController:
                 )
                 if new_value.upper() == "B":
                     self.run_edit_tournament()
-                if self.view.confirm_new_value(old_value, new_value).upper() == "Y":
+                if self.view.confirm_new_value(old_value, new_value) == "Y":
                     if parameter in ["date_start", "date_end"]:
                         try:
                             new_value = parser.parse(new_value)
                         except ValueError:
                             print(
-                                "Veuillez entrer une date de naissance au format jj/mm/aaaa ou yyyy/mm/dd"
+                                "Veuillez entrer une date de naissance "
+                                "au format jj/mm/aaaa ou yyyy/mm/dd"
                             )
                             self.view.modification_cancelled()
                             new_value = old_value
@@ -369,16 +381,19 @@ class MainController:
                     elif parameter == "nb_rounds":
                         new_value = int(new_value)
                     elif parameter == "status":
-                        if new_value not in ["upcoming", "in progress", "ended"]:
+                        if new_value not in ["upcoming",
+                                             "in progress", "ended"]:
                             print(
-                                "Le statut du tournoi doit être : 'upcoming', 'in progress' ou 'ended'"
+                                "Le statut du tournoi doit être : "
+                                "'upcoming', 'in progress' ou 'ended'"
                             )
                             self.view.modification_cancelled()
                             new_value = old_value
                             self.run_edit_tournament()
                     if new_value != old_value:
                         self.view.modification_validated()
-                    self.tournament.set_new_value(parameter, new_value)
+                    self.dm.update_tournament(
+                        self.tournament, parameter, new_value)
                     self.run_edit_tournament()
                 else:
                     self.view.modification_cancelled()
@@ -425,7 +440,8 @@ class MainController:
             self.view.current_player_and_tournament(
                 self.player, self.tournament, self.current_menu
             )
-            p_choice = self.view.display_all_players(self.dm.players, self.tournament)
+            p_choice = \
+                self.view.display_all_players(self.dm.players, self.tournament)
         if p_choice.upper() == "Y":
             pass
         else:
@@ -488,7 +504,8 @@ class MainController:
                     param_choices[str(index)] = param
                     valid_choices.append(str(index))
             while choice.upper() not in valid_choices:
-                choice = self.view.display_editing_player(self.player, param_choices)
+                choice = self.view.display_editing_player(
+                    self.player, param_choices)
             if choice.upper() == "N":
                 self.current_menu = self.menus["player"]
                 self.view.clear()
@@ -504,13 +521,14 @@ class MainController:
                 )
                 if new_value.upper() == "B":
                     self.run_edit_player()
-                if self.view.confirm_new_value(old_value, new_value).upper() == "Y":
+                if self.view.confirm_new_value(old_value, new_value) == "Y":
                     if parameter == "birthdate":
                         try:
                             new_value = parser.parse(new_value)
                         except ValueError:
                             print(
-                                "Veuillez entrer une date de naissance au format jj/mm/aaaa ou yyyy/mm/dd"
+                                "Veuillez entrer une date de naissance "
+                                "au format jj/mm/aaaa ou yyyy/mm/dd"
                             )
                             self.view.modification_cancelled()
                             new_value = old_value
@@ -602,7 +620,8 @@ class MainController:
             elif p_choice.upper() == "Y":
                 pass
             else:
-                self.dm.add_or_remove_a_player_to_tournament(p_choice, self.tournament)
+                self.dm.add_or_remove_a_player_to_tournament(
+                    p_choice, self.tournament)
                 self.run_add_remove_player_tournament()
 
     def run_report(self):
@@ -644,7 +663,8 @@ class MainController:
                 self.view.current_player_and_tournament(
                     self.player, self.tournament, self.current_menu
                 )
-                t_choice = self.view.display_all_tournaments(self.dm.tournaments)
+                t_choice = self.view.display_all_tournaments(
+                    self.dm.tournaments)
             if t_choice.upper() == "C":
                 self.view.clear()
                 self.view.current_player_and_tournament(
@@ -657,7 +677,8 @@ class MainController:
                 self.view.current_player_and_tournament(
                     self.player, self.tournament, self.current_menu
                 )
-                self.view.report_players_in_tournament(players, self.tournament)
+                self.view.report_players_in_tournament(
+                    players, self.tournament)
         else:
             players = self.dm.sorted_players_alpha(self.tournament.players)
             self.view.report_players_in_tournament(players, self.tournament)
@@ -678,7 +699,8 @@ class MainController:
                 self.view.current_player_and_tournament(
                     self.player, self.tournament, self.current_menu
                 )
-                t_choice = self.view.display_all_tournaments(self.dm.tournaments)
+                t_choice = self.view.display_all_tournaments(
+                    self.dm.tournaments)
             if t_choice.upper() == "C":
                 self.view.clear()
                 self.view.current_player_and_tournament(
@@ -687,7 +709,8 @@ class MainController:
             else:
                 self.tournament = self.dm.load_tournament(t_choice)
                 players = self.dm.sorted_players_rank(self.tournament.players)
-                self.view.report_players_in_tournament(players, self.tournament)
+                self.view.report_players_in_tournament(
+                    players, self.tournament)
         else:
             players = self.dm.sorted_players_rank(self.tournament.players)
             self.view.report_players_in_tournament(players, self.tournament)
@@ -697,7 +720,8 @@ class MainController:
         self.view.current_player_and_tournament(
             self.player, self.tournament, self.current_menu
         )
-        tournaments = self.dm.sorted_tournaments_date(self.dm.tournaments.values())
+        tournaments = self.dm.sorted_tournaments_date(
+            self.dm.tournaments.values())
         self.view.report_all_tournaments(tournaments)
 
     def run_report_all_rounds(self):
@@ -716,7 +740,8 @@ class MainController:
                 self.view.current_player_and_tournament(
                     self.player, self.tournament, self.current_menu
                 )
-                t_choice = self.view.display_all_tournaments(self.dm.tournaments)
+                t_choice = self.view.display_all_tournaments(
+                    self.dm.tournaments)
             if t_choice.upper() == "C":
                 self.view.clear()
                 self.view.current_player_and_tournament(
@@ -752,7 +777,8 @@ class MainController:
                 self.view.current_player_and_tournament(
                     self.player, self.tournament, self.current_menu
                 )
-                t_choice = self.view.display_all_tournaments(self.dm.tournaments)
+                t_choice = self.view.display_all_tournaments(
+                    self.dm.tournaments)
             if t_choice.upper() == "C":
                 self.view.clear()
                 self.view.current_player_and_tournament(

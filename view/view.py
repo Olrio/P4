@@ -4,17 +4,19 @@ from dateutil import parser
 
 
 class View:
-    def __init__(self):
-        pass
-
-    def home(self, player, tournament, menu):
-        os.system("cls" if os.name == "nt" else "clear")
-        print("*** Chess Manager : gestionnaire de tournois d'échecs ***\n")
-        self.current_player_and_tournament(player, tournament, menu)
-
     @staticmethod
     def press_key():
         input("\nPressez une touche pour continuer\n")
+
+    @classmethod
+    def f_25(cls, date):
+        return f"{date.strftime('%Y-%m-%d'):<25}"
+
+    @classmethod
+    def home(cls, player, tournament, menu):
+        os.system("cls" if os.name == "nt" else "clear")
+        print("*** Chess Manager : gestionnaire de tournois d'échecs ***\n")
+        cls.current_player_and_tournament(player, tournament, menu)
 
     @staticmethod
     def clear():
@@ -42,7 +44,7 @@ class View:
             t_players = []
         else:
             t_players = tournament.sort_players(tournament.players)
-        print(f"Liste des joueurs existants\n")
+        print("Liste des joueurs existants\n")
         print(f"{'Nom':<12}{'Prénom':<10}{'Classement':<20}{'DN':<15}\n")
         for player in players.values():
             print(f"{player}", end="")
@@ -66,7 +68,7 @@ class View:
             t_players = []
         else:
             t_players = tournament.sort_players(tournament.players)
-        print(f"Liste des joueurs existants\n")
+        print("Liste des joueurs existants\n")
         print(f"{'Nom':<12}{'Prénom':<10}{'Classement':<20}{'DN':<15}\n")
         for player in players.values():
             print(f"{player}", end="")
@@ -78,7 +80,8 @@ class View:
             print(f"\nJoueurs participant au tournoi {tournament.name} :\n")
             for player in tournament.players:
                 print(f"{player} [{player.ident}]")
-            print("\nSaisissez le numéro du joueur à ajouter/retirer au tournoi [x]")
+            print("\nSaisissez le numéro du joueur"
+                  " à ajouter/retirer au tournoi [x]")
             print("Tapez [C] pour retirer tous les joueurs du tournoi")
             print("Tapez [Y] pour valider et passer à la suite")
 
@@ -90,13 +93,16 @@ class View:
     def change_player_rank_during_tournament(tournament):
         for player in tournament.players:
             print(f"{player} [{player.ident}]")
-        print("\nSaisissez le numéro du joueur dont vous voulez modifier le classement [x]")
+        print(
+            "\nSaisissez le numéro du joueur "
+            "dont vous voulez modifier le classement [x]"
+        )
         print("Tapez [C] pour annuler")
         return input("-->  ")
 
     @staticmethod
     def display_all_tournaments(tournaments):
-        print(f"Liste des tournois existants\n")
+        print("Liste des tournois existants\n")
         print(f"{'Nom':<30}{'Ville':<20}{'Pays':<22}{'Début':<20}{'Statut'}\n")
         for tournament in tournaments.values():
             print(f"{tournament} [{tournament.ident}]")
@@ -104,30 +110,37 @@ class View:
         print("Tapez [C] si vous ne souhaitez pas sélectionner un tournoi")
         return input("-->  ")
 
-    @staticmethod
-    def display_editing_tournament(tournament, choices):
+    @classmethod
+    def display_editing_tournament(cls, tournament, choices):
         for choice in choices.items():
-            if isinstance(tournament.__getattribute__(choice[1]), datetime.datetime):
+            if isinstance(
+                tournament.__getattribute__(choice[1]),
+                datetime.datetime,
+            ):
                 print(
                     f"{tournament.get_translation_fr(choice[1]):<20}"
-                    f"{tournament.__getattribute__(choice[1]).strftime('%Y-%m-%d'):<25} [{choice[0]}]"
+                    f"{cls.f_25(tournament.__getattribute__(choice[1]))} "
+                    f"[{choice[0]}]"
                 )
             else:
                 print(
                     f"{tournament.get_translation_fr(choice[1]):<20}"
-                    f"{tournament.__getattribute__(choice[1]):<25} [{choice[0]}]"
+                    f"{tournament.__getattribute__(choice[1]):<25}"
+                    f" [{choice[0]}]"
                 )
         print("\nSaisissez le nombre [x] correspondant à la donnée à modifier")
         print("Tapez [N] pour quitter l'éditeur de tournoi")
         return input("-->  ")
 
-    @staticmethod
-    def display_editing_player(player, choices):
+    @classmethod
+    def display_editing_player(cls, player, choices):
         for choice in choices.items():
-            if isinstance(player.__getattribute__(choice[1]), datetime.datetime):
+            if isinstance(player.__getattribute__(
+                    choice[1]), datetime.datetime):
                 print(
                     f"{player.get_translation_fr(choice[1]):<20}"
-                    f"{player.__getattribute__(choice[1]).strftime('%Y-%m-%d'):<25} [{choice[0]}]"
+                    f"{cls.f_25(player.__getattribute__(choice[1]))}"
+                    f" [{choice[0]}]"
                 )
             else:
                 print(
@@ -138,20 +151,25 @@ class View:
         print("Tapez [N] pour quitter l'éditeur de joueur")
         return input("-->  ")
 
-    def show_players_in_tournament(self, tournament, text=""):
+    @classmethod
+    def show_players_in_tournament(cls, tournament, text=""):
         if tournament:
-            print(f"Classement des joueurs du tournoi {tournament.name} {text}\n")
+            print(f"Classement des joueurs du tournoi "
+                  f"{tournament.name} {text}\n")
             if not tournament.players:
-                self.no_player_in_tournament(tournament)
+                cls.no_player_in_tournament(tournament)
             else:
                 print(
-                    f"{'Nom':<12}{'Prénom':<10}{'Classement':<20}{'DN':<15}{'Score':<10}\n"
+                    f"{'Nom':<12}{'Prénom':<10}{'Classement':<20}"
+                    f"{'DN':<15}{'Score':<10}\n"
                 )
-                tournament.players = tournament.sort_players(tournament.players)
+                tournament.players = tournament.sort_players(
+                    tournament.players)
                 for player in tournament.players:
                     if tournament.rounds:
                         print(
-                            f"{player}{tournament.rounds[-1].scores[player.ident]:<10}"
+                            f"{player}"
+                            f"{tournament.rounds[-1].scores[player.ident]:<10}"
                         )
                     else:
                         print(f"{player}{'0.0':<10}")
@@ -160,12 +178,15 @@ class View:
     @staticmethod
     def no_player_in_tournament(tournament):
         print(
-            f"Il n'y a actuellement aucun participant pour le tournoi {tournament.name}.\n"
+            f"Il n'y a actuellement aucun participant"
+            f" pour le tournoi {tournament.name}.\n"
         )
 
-    def not_enought_players_in_tournament(self, tournament):
-        print(f"Il faut au moins 2 joueurs pour débuter le tournoi {tournament.name}")
-        self.press_key()
+    @classmethod
+    def not_enought_players_in_tournament(cls, tournament):
+        print(f"Il faut au moins 2 joueurs"
+              f" pour débuter le tournoi {tournament.name}")
+        cls.press_key()
 
     @staticmethod
     def load_or_create_player():
@@ -178,7 +199,8 @@ class View:
 
     @staticmethod
     def add_another_player():
-        return input("Voulez-vous ajouter d'autres joueurs au tournoi ([Y]/[N]) ?")
+        return input("Voulez-vous ajouter "
+                     "d'autres joueurs au tournoi ([Y]/[N]) ?")
 
     @staticmethod
     def valid_or_cancel():
@@ -202,27 +224,33 @@ class View:
             print(up + clrline)
             return user_input
 
-        return inline_input("Poursuivre [Y], Modifier le classement d'un joueur [E]"
-                            " ou revenir à l'accueil [N] ?").upper()
+        return inline_input(
+            "Poursuivre [Y], Modifier le classement d'un joueur [E]"
+            " ou revenir à l'accueil [N] ?"
+        ).upper()
 
     @staticmethod
     def show_matchs_of_the_round(tournament):
+        t_round = tournament.rounds[-1]
         os.system("cls" if os.name == "nt" else "clear")
         print(
-            f"Matchs de la ronde : {len(tournament.rounds):<15} Début de la ronde : "
-            f"{tournament.rounds[-1].start.strftime('%Y-%m-%d  %H:%M:%S')}\n"
+            f"Matchs de la ronde : "
+            f"{len(tournament.rounds):<15} Début de la ronde : "
+            f"{t_round.start.strftime('%Y-%m-%d  %H:%M:%S')}\n"
         )
-        for match in tournament.rounds[-1].matchs:
+        for match in t_round.matchs:
             if not match.data[1][0]:
                 print(
                     f"\nMatch N° {match.ident[2]}{':':<10} {match.data[0][0]}"
-                    f"  {tournament.rounds[-1].scores[match.data[0][0].ident]:<10}Joueur flottant"
+                    f"  {t_round.scores[match.data[0][0].ident]:<10}"
+                    f"Joueur flottant"
                 )
             else:
                 print(
                     f"Match N° {match.ident[2]}{':':<10} {match.data[0][0]} "
-                    f" {tournament.rounds[-1].scores[match.data[0][0].ident]:<10}{'vs':<10} {match.data[1][0]} "
-                    f" {tournament.rounds[-1].scores[match.data[1][0].ident]:<10}",
+                    f" {t_round.scores[match.data[0][0].ident]:<10}"
+                    f"{'vs':<10} {match.data[1][0]} "
+                    f" {t_round.scores[match.data[1][0].ident]:<10}",
                     end="",
                 )
                 if match.data[0][1] == 0 and match.data[1][1] == 0:
@@ -242,22 +270,27 @@ class View:
         print(f"Résultat du {match}\n")
         print(
             f"Victoire de            : {match.data[0][0].firstname:>15}"
-            f" {match.data[0][0].lastname:<15}  {'[':>10}{match.data[0][0].ident}]"
+            f" {match.data[0][0].lastname:<15}"
+            f"  {'[':>10}{match.data[0][0].ident}]"
         )
         print(
-            f"Victoire de            : {match.data[1][0].firstname:>15}"
-            f" {match.data[1][0].lastname:<15}  {'[':>10}{match.data[1][0].ident}]"
+            f"Victoire de            : "
+            f"{match.data[1][0].firstname:>15}"
+            f" {match.data[1][0].lastname:<15}"
+            f"  {'[':>10}{match.data[1][0].ident}]"
         )
         print(f"Match nul              : {'[N]':>45}")
         print(f"Revenir aux matchs     : {'[C]':>45}")
         return input("--> ")
 
-    def some_results_missing(self, tournament):
+    @classmethod
+    def some_results_missing(cls, tournament):
         print(
-            f"Vous n'avez pas entré tous les résultats de la ronde {len(tournament.rounds)}"
+            f"Vous n'avez pas entré tous les résultats "
+            f"de la ronde {len(tournament.rounds)}"
         )
-        print(f"Veuillez compléter vos saisies avant de lancer le tour suivant")
-        self.press_key()
+        print("Veuillez compléter vos saisies avant de lancer le tour suivant")
+        cls.press_key()
 
     @staticmethod
     def get_data_new_tournament():
@@ -292,13 +325,15 @@ class View:
     @staticmethod
     def get_data_new_player():
         data = dict()
-        data.update({
-            "Nom": "Player",
-            "Prénom": "x",
-            "Classement": 1500,
-            "Date de naissance": datetime.date.today(),
-            "Sexe": "",
-        })
+        data.update(
+            {
+                "Nom": "Player",
+                "Prénom": "x",
+                "Classement": 1500,
+                "Date de naissance": datetime.date.today(),
+                "Sexe": "",
+            }
+        )
         print("Veuillez saisir les informations du nouveau joueur :")
         for item in data.items():
             if item[0] in ["Date de naissance"]:
@@ -316,29 +351,36 @@ class View:
                 data[item[0]] = entry
         return data
 
-    def alert_creating_an_existing_tournament(self, name, town, country, date):
+    @classmethod
+    def alert_creating_an_existing_tournament(cls, name, town, country, date):
         print(
-            f"ATTENTION ! Il existe déjà un tournoi {name} de {town} ({country})"
+            f"ATTENTION ! Il existe déjà un tournoi "
+            f"{name} de {town} ({country})"
             f" et qui commence le {date} dans la base de données"
         )
-        print("Veuillez modifier vos saisies pour distinguer les deux tournois")
-        self.press_key()
+        print("Veuillez modifier vos saisies "
+              "pour distinguer les deux tournois")
+        cls.press_key()
 
-    def alert_creating_an_existing_player(self, lastname, firstname, dob):
+    @classmethod
+    def alert_creating_an_existing_player(cls, lastname, firstname, dob):
         print(
             f"ATTENTION ! Il existe déjà un joueur {firstname} {lastname}"
             f" né le {dob.strftime('%Y-%m-%d')} dans la base de données"
         )
         print("Veuillez modifier vos saisies pour distinguer les deux joueurs")
-        self.press_key()
+        cls.press_key()
 
-    def alert_tournament_permanently_delete(self, tournament):
-        print(f"ATTENTION !! Le tournoi {tournament} sera définitivement supprimé")
-        self.press_key()
+    @classmethod
+    def alert_tournament_permanently_delete(cls, tournament):
+        print(f"ATTENTION !! Le tournoi {tournament} "
+              f"sera définitivement supprimé")
+        cls.press_key()
 
-    def alert_player_permanently_delete(self, player):
+    @classmethod
+    def alert_player_permanently_delete(cls, player):
         print(f"ATTENTION !! Le joueur {player} sera définitivement supprimé")
-        self.press_key()
+        cls.press_key()
 
     @staticmethod
     def tournament_ended(tournament):
@@ -348,21 +390,27 @@ class View:
     def tournament_in_progress(tournament):
         print(f"Le tournoi {tournament.name} a déjà débuté.")
 
-    def add_remove_player_tournament_disabled(self):
-        print(f"Il n'est pas possible de modifier la liste des joueurs y participant.")
-        self.press_key()
+    @classmethod
+    def add_remove_player_tournament_disabled(cls):
+        print("Il n'est pas possible de modifier "
+              "la liste des joueurs y participant.")
+        cls.press_key()
 
-    def no_selected_tournament(self):
+    @classmethod
+    def no_selected_tournament(cls):
         print("Aucun tournoi sélectionné")
-        self.press_key()
+        cls.press_key()
 
-    def no_selected_player(self):
+    @classmethod
+    def no_selected_player(cls):
         print("Aucun joueur sélectionné")
-        self.press_key()
+        cls.press_key()
 
-    def not_swiss_system(self):
-        print("L'application ne gère pas encore les tournois de sytème non suisse")
-        self.press_key()
+    @classmethod
+    def not_swiss_system(cls):
+        print("L'application ne gère pas encore "
+              "les tournois de sytème non suisse")
+        cls.press_key()
 
     @staticmethod
     def swiss_final_results(tournament):
@@ -372,11 +420,13 @@ class View:
         print(f"{'Nom':<10} {'Prénom':<15} {'Classement':<15} {'Score':<5}")
         for player in tournament.players:
             print(
-                f"{player.lastname:<10} {player.firstname:<15} {player.rank:<15}"
+                f"{player.lastname:<10} {player.firstname:<15} "
+                f"{player.rank:<15}"
                 f" {tournament.rounds[-1].scores[player.ident]:<5}"
             )
         print(
-            f"\n***** Victoire de {tournament.players[0].firstname} {tournament.players[0].lastname} *****\n"
+            f"\n***** Victoire de {tournament.players[0].firstname} "
+            f"{tournament.players[0].lastname} *****\n"
         )
         print("Pressez une touche pour revenir à l'accueil")
         return input("--> ")
@@ -385,7 +435,8 @@ class View:
     def new_value_for_data(param, olddata):
         os.system("cls" if os.name == "nt" else "clear")
         print(
-            f"Saisissez la nouvelle valeur de {param} en remplacement de {olddata} \n"
+            f"Saisissez la nouvelle valeur de {param} "
+            f"en remplacement de {olddata} \n"
             f"[B] pour revenir à la liste des paramètres\n"
         )
         return input("-->  ")
@@ -393,16 +444,19 @@ class View:
     @staticmethod
     def confirm_new_value(olddata, newdata):
         return input(
-            f"Veuillez confirmer que vous remplacez {olddata} par {newdata} : [Y] pour valider la modification : "
-        )
+            f"Veuillez confirmer que vous remplacez {olddata} par {newdata} :"
+            f" [Y] pour valider la modification : "
+        ).upper()
 
-    def modification_validated(self):
+    @classmethod
+    def modification_validated(cls):
         print("La modification est validée")
-        self.press_key()
+        cls.press_key()
 
-    def modification_cancelled(self):
+    @classmethod
+    def modification_cancelled(cls):
         print("La modification est annulée")
-        self.press_key()
+        cls.press_key()
 
     @staticmethod
     def report_main_page():
@@ -449,11 +503,13 @@ class View:
                 if match.data[1][0]:
                     print(
                         f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}"
-                        f"  {match.data[0][1]:<10}{'vs':<10} {match.data[1][0]}  {match.data[1][1]:<10}"
+                        f"  {match.data[0][1]:<10}{'vs':<10} "
+                        f"{match.data[1][0]}  {match.data[1][1]:<10}"
                     )
                 else:
                     print(
-                        f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}  {match.data[0][1]:<10}"
+                        f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}"
+                        f"  {match.data[0][1]:<10}"
                     )
             print()
 
@@ -464,10 +520,12 @@ class View:
                 if match.data[1][0]:
                     print(
                         f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}"
-                        f"  {match.data[0][1]:<10}{'vs':<10} {match.data[1][0]}  {match.data[1][1]:<10}"
+                        f"  {match.data[0][1]:<10}{'vs':<10} "
+                        f"{match.data[1][0]}  {match.data[1][1]:<10}"
                     )
                 else:
                     print(
-                        f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}  {match.data[0][1]:<10}"
+                        f"Match N° {match.ident[2]}{':':<10}{match.data[0][0]}"
+                        f"  {match.data[0][1]:<10}"
                     )
             print()

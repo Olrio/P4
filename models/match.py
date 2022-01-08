@@ -23,11 +23,13 @@ class Match:
     def __repr__(self):
         if self.data[1][0]:
             return (
-                f"Match entre {self.data[0][0].firstname} {self.data[0][0].lastname}"
+                f"Match entre {self.data[0][0].firstname} "
+                f"{self.data[0][0].lastname}"
                 f" et {self.data[1][0].firstname} {self.data[1][0].lastname}"
             )
         else:
-            return f"Joueur flottant : {self.data[0][0].firstname} {self.data[0][0].lastname}"
+            return f"Joueur flottant : {self.data[0][0].firstname} " \
+                   f"{self.data[0][0].lastname}"
 
     def set_new_value(self, param, value):
         self.__setattr__(param, value)
@@ -45,11 +47,13 @@ class Match:
     def random_result(self):
         if not self.data[1][0]:
             print(
-                f"Match N° {self.ident} : Le joueur flottant {self.data[0][0]} marque 1 point"
+                f"Match N° {self.ident} : Le joueur flottant "
+                f"{self.data[0][0]} marque 1 point"
             )
             self.data[0][1] += 1
         else:
-            print(f"Match N° {self.ident} : {self.data[0][0]} vs {self.data[1][0]}")
+            print(f"Match N° {self.ident} : "
+                  f"{self.data[0][0]} vs {self.data[1][0]}")
             ecart = abs(self.data[0][0].rank - self.data[1][0].rank)
             maxrank = 1000
             chance_draw = 0.33 - 0.66 * (ecart / (2 * maxrank))
@@ -64,6 +68,7 @@ class Match:
                 print(f"Victoire de {self.data[1][0]} \n")
                 self.data[1][1] += 1
             else:
-                print(f"Match nul entre {self.data[0][0]} et {self.data[1][0]} \n")
+                print(f"Match nul entre {self.data[0][0]} "
+                      f"et {self.data[1][0]} \n")
                 self.data[0][1] += 0.5
                 self.data[1][1] += 0.5

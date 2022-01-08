@@ -4,70 +4,87 @@ Create all menus of the script
 
 list_menus = [
     ("home", "menu_home(menus, menus['home'])"),
-    ("tournament", "menu_tournament(menus, menus['tournament'], menus['home'])"),
+    ("tournament",
+     "menu_tournament(menus, menus['tournament'], menus['home'])"),
     ("player", "menu_player(menus, menus['player'], menus['home'])"),
     ("report", "menu_report(menus, menus['report'], menus['home'])"),
     (
         "all_players_alpha",
-        "menu_report_all_players_alpha(menus, menus['all_players_alpha'], menus['report'])",
+        "menu_report_all_players_alpha(menus, menus['all_players_alpha'],"
+        " menus['report'])",
     ),
     (
         "all_players_rank",
-        "menu_report_all_players_rank(menus, menus['all_players_rank'], menus['report'])",
+        "menu_report_all_players_rank(menus, menus['all_players_rank'],"
+        " menus['report'])",
     ),
     (
         "players_tournament_alpha",
-        "menu_report_players_tournament_alpha(menus, menus['players_tournament_alpha'], menus['report'])",
+        "menu_report_players_tournament_alpha(menus,"
+        " menus['players_tournament_alpha'], menus['report'])",
     ),
     (
         "players_tournament_rank",
-        "menu_report_players_tournament_rank(menus, menus['players_tournament_rank'], menus['report'])",
+        "menu_report_players_tournament_rank(menus,"
+        " menus['players_tournament_rank'], menus['report'])",
     ),
     (
         "all_tournaments",
-        "menu_report_all_tournaments(menus, menus['all_tournaments'], menus['report'])",
+        "menu_report_all_tournaments(menus,"
+        " menus['all_tournaments'], menus['report'])",
     ),
     (
         "all_rounds",
-        "menu_report_all_rounds(menus, menus['all_rounds'], menus['report'])",
+        "menu_report_all_rounds(menus,"
+        " menus['all_rounds'], menus['report'])",
     ),
     (
         "all_matchs",
-        "menu_report_all_matchs(menus, menus['all_matchs'], menus['report'])",
+        "menu_report_all_matchs(menus,"
+        " menus['all_matchs'], menus['report'])",
     ),
     (
         "create_tournament",
-        "menu_create_tournament(menus, menus['create_tournament'], menus['tournament'])",
+        "menu_create_tournament(menus,"
+        " menus['create_tournament'], menus['tournament'])",
     ),
     (
         "load_tournament",
-        "menu_load_tournament(menus, menus['load_tournament'], menus['tournament'])",
+        "menu_load_tournament(menus,"
+        " menus['load_tournament'], menus['tournament'])",
     ),
     (
         "edit_tournament",
-        "menu_edit_tournament(menus, menus['edit_tournament'], menus['tournament'])",
+        "menu_edit_tournament(menus,"
+        " menus['edit_tournament'], menus['tournament'])",
     ),
     (
         "delete_tournament",
-        "menu_delete_tournament(menus, menus['delete_tournament'], menus['tournament'])",
+        "menu_delete_tournament(menus,"
+        " menus['delete_tournament'], menus['tournament'])",
     ),
     (
         "start_tournament",
-        "menu_start_tournament(menus, menus['start_tournament'], menus['tournament'])",
+        "menu_start_tournament(menus,"
+        " menus['start_tournament'], menus['tournament'])",
     ),
     (
         "add_remove_player_tournament",
-        "menu_add_remove_player_tournament(menus, menus['add_remove_player_tournament'], menus['tournament'])",
+        "menu_add_remove_player_tournament(menus,"
+        " menus['add_remove_player_tournament'], menus['tournament'])",
     ),
     (
         "create_player",
         "menu_create_player(menus, menus['create_player'], menus['player'])",
     ),
-    ("load_player", "menu_load_player(menus, menus['load_player'], menus['player'])"),
-    ("edit_player", "menu_edit_player(menus, menus['edit_player'], menus['player'])"),
+    ("load_player", "menu_load_player(menus,"
+                    " menus['load_player'], menus['player'])"),
+    ("edit_player", "menu_edit_player(menus,"
+                    " menus['edit_player'], menus['player'])"),
     (
         "delete_player",
-        "menu_delete_player(menus, menus['delete_player'], menus['player'])",
+        "menu_delete_player(menus,"
+        " menus['delete_player'], menus['player'])",
     ),
 ]
 
@@ -90,6 +107,14 @@ class Menu:
         return f"Menu   :{self.name} --- {self.path}\n"
 
 
+def get_menus(menus):
+    for menu in list_menus:
+        menus.update({menu[0]: Menu()})
+    for menu in list_menus:
+        eval(menu[1])
+    return menus
+
+
 def menu_home(menus, menu):
     menu.name = "Accueil"
     menu.set_path()
@@ -108,14 +133,18 @@ def menu_tournament(menus, menu, parent):
     menu.parent = parent
     menu.set_path()
     menu.choices = {
-        "C": (f"{'Créer un nouveau tournoi':<45}[C]", menus["create_tournament"]),
-        "L": (f"{'Charger un tournoi existant':<45}[L]", menus["load_tournament"]),
-        "E": (f"{'Editer le tournoi sélectionné':<45}[E]", menus["edit_tournament"]),
+        "C": (f"{'Créer un nouveau tournoi':<45}[C]",
+              menus["create_tournament"]),
+        "L": (f"{'Charger un tournoi existant':<45}[L]",
+              menus["load_tournament"]),
+        "E": (f"{'Editer le tournoi sélectionné':<45}[E]",
+              menus["edit_tournament"]),
         "D": (
             f"{'Supprimer le tournoi sélectionné':<45}[D]",
             menus["delete_tournament"],
         ),
-        "S": (f"{'Gérer le tournoi':<45}[S]", menus["start_tournament"]),
+        "S": (f"{'Gérer le tournoi':<45}[S]",
+              menus["start_tournament"]),
         "A": (
             f"{'Ajouter ou retirer un joueur au tournoi':<45}[A]",
             menus["add_remove_player_tournament"],
@@ -132,14 +161,18 @@ def menu_load_tournament(menus, menu, parent):
     menu.parent = parent
     menu.set_path()
     menu.choices = {
-        "S": (f"{'Gérer le tournoi':<45}[S]", menus["start_tournament"]),
-        "E": (f"{'Editer le tournoi sélectionné':<45}[E]", menus["edit_tournament"]),
+        "S": (f"{'Gérer le tournoi':<45}[S]",
+              menus["start_tournament"]),
+        "E": (f"{'Editer le tournoi sélectionné':<45}[E]",
+              menus["edit_tournament"]),
         "D": (
             f"{'Supprimer le tournoi sélectionné':<45}[D]",
             menus["delete_tournament"],
         ),
-        "L": (f"{'Charger un tournoi existant':<45}[L]", menus["load_tournament"]),
-        "C": (f"{'Créer un nouveau tournoi':<45}[C]", menus["create_tournament"]),
+        "L": (f"{'Charger un tournoi existant':<45}[L]",
+              menus["load_tournament"]),
+        "C": (f"{'Créer un nouveau tournoi':<45}[C]",
+              menus["create_tournament"]),
         "P": (f"{'Menu joueur':<45}[P]", menus["player"]),
         "A": (
             f"{'Ajouter ou retirer un joueur au tournoi':<45}[A]",
@@ -226,17 +259,24 @@ def menu_player(menus, menu, parent):
     menu.parent = parent
     menu.set_path()
     menu.choices = {
-        "C": (f"{'Créer un nouveau joueur':<45}[C]", menus["create_player"]),
-        "L": (f"{'Charger un joueur existant':<45}[L]", menus["load_player"]),
-        "E": (f"{'Editer le joueur sélectionné':<45}[E]", menus["edit_player"]),
-        "D": (f"{'Supprimer le joueur sélectionné':<45}[D]", menus["delete_player"]),
+        "C": (f"{'Créer un nouveau joueur':<45}[C]",
+              menus["create_player"]),
+        "L": (f"{'Charger un joueur existant':<45}[L]",
+              menus["load_player"]),
+        "E": (f"{'Editer le joueur sélectionné':<45}[E]",
+              menus["edit_player"]),
+        "D": (f"{'Supprimer le joueur sélectionné':<45}[D]",
+              menus["delete_player"]),
         "A": (
             f"{'Ajouter ou retirer un joueur au tournoi':<45}[A]",
             menus["add_remove_player_tournament"],
         ),
-        "T": (f"{'Menu tournoi':<45}[T]", menus["tournament"]),
-        "S": (f"{'Gérer le tournoi':<45}[S]", menus["start_tournament"]),
-        "H": (f"{'Menu accueil':<45}[H]", menus["home"]),
+        "T": (f"{'Menu tournoi':<45}[T]",
+              menus["tournament"]),
+        "S": (f"{'Gérer le tournoi':<45}[S]",
+              menus["start_tournament"]),
+        "H": (f"{'Menu accueil':<45}[H]",
+              menus["home"]),
         "Q": (f"{'Quitter':<45}[Q]", "quit"),
     }
     menu.run = "self.run_player()"
@@ -252,8 +292,10 @@ def menu_load_player(menus, menu, parent):
             f"{'Ajouter ou retirer un joueur au tournoi':<45}[A]",
             menus["add_remove_player_tournament"],
         ),
-        "E": (f"{'Editer le joueur sélectionné':<45}[E]", menus["edit_player"]),
-        "D": (f"{'Supprimer le joueur sélectionné':<45}[D]", menus["delete_player"]),
+        "E": (f"{'Editer le joueur sélectionné':<45}[E]",
+              menus["edit_player"]),
+        "D": (f"{'Supprimer le joueur sélectionné':<45}[D]",
+              menus["delete_player"]),
         "T": (f"{'Menu tournoi':<45}[T]", menus["tournament"]),
         "P": (f"{'Menu joueur':<45}[P]", menus["player"]),
         "H": (f"{'Menu accueil':<45}[H]", menus["home"]),
@@ -342,7 +384,8 @@ def menu_report(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -353,8 +396,10 @@ def menu_report(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -372,7 +417,8 @@ def menu_report_all_players_alpha(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -383,8 +429,10 @@ def menu_report_all_players_alpha(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -402,7 +450,8 @@ def menu_report_all_players_rank(menus, menu, parent):
             menus["all_players_alpha"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -413,8 +462,10 @@ def menu_report_all_players_rank(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -436,7 +487,8 @@ def menu_report_players_tournament_alpha(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -447,8 +499,10 @@ def menu_report_players_tournament_alpha(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -470,15 +524,18 @@ def menu_report_players_tournament_rank(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "5": (
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -500,15 +557,18 @@ def menu_report_all_tournaments(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
             f"{'Afficher les joueurs du tournoi par classement':<55}[4]",
             menus["players_tournament_rank"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -530,7 +590,8 @@ def menu_report_all_rounds(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -541,7 +602,8 @@ def menu_report_all_rounds(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]", menus["all_matchs"]),
+        "7": (f"{'Afficher tous les matchs du tournoi':<55}[7]",
+              menus["all_matchs"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
@@ -563,7 +625,8 @@ def menu_report_all_matchs(menus, menu, parent):
             menus["all_players_rank"],
         ),
         "3": (
-            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}[3]",
+            f"{'Afficher les joueurs du tournoi par ordre alphabétique':<55}"
+            f"[3]",
             menus["players_tournament_alpha"],
         ),
         "4": (
@@ -574,7 +637,8 @@ def menu_report_all_matchs(menus, menu, parent):
             f"{'Afficher la liste de tous les tournois':<55}[5]",
             menus["all_tournaments"],
         ),
-        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]", menus["all_rounds"]),
+        "6": (f"{'Afficher toutes les rondes du tournoi':<55}[6]",
+              menus["all_rounds"]),
         "H": (f"{'Menu accueil':<55}[H]", menus["home"]),
         "Q": (f"{'Quitter':<55}[Q]", "quit"),
     }
