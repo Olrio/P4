@@ -3,6 +3,7 @@ from models.player import Player
 from models.round import Round
 from models.tournament import Tournament
 from models.match import Match
+import os
 
 
 class DataLoader:
@@ -24,6 +25,8 @@ class DataLoader:
 
 class DBLoaderSaver:
     def __init__(self):
+        if not os.path.exists("./data"):
+            os.makedirs("./data")
         self.db = TinyDB("data/db.json")
         self.query = Query()
 
