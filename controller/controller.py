@@ -259,6 +259,7 @@ class MainController:
         while choice not in ["Y", "N", "E"]:
             choice = self.view.resume_or_back_home()
         if choice == "N":
+            self.current_menu = self.menus["home"]
             self.run()
         elif choice.upper() == "E":
             self.change_player_rank_during_tournament(tournament)
