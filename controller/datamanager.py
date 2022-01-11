@@ -39,9 +39,7 @@ class DataManager:
                     self.matchs.get(match)
             for player in t_round.players:
                 t_round.players[t_round.players.index(player)] = \
-                    self.players.get(
-                    player
-                )
+                    self.players.get(player)
             self.rounds[t_round.ident] = t_round
         self.tournaments = dict()
         tournaments_serialized = self.db.load_db_all("chess_tournaments")
@@ -101,6 +99,10 @@ class DataManager:
                 == data["Date de naissance"].strftime("%Y-%m-%d")
             ):
                 return None
+            if not data["Classement"].isdecimal() or\
+                    int(data["Classement"]) < 1000 or\
+                    int(data["Classement"]) > 2900:
+                return "rank_incorrect"
         player = self.crud.create_player(data, players)
         self.db.save_db(player)
         return player

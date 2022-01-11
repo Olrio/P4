@@ -529,3 +529,10 @@ class View:
                         f"  {match.data[0][1]:<10}"
                     )
             print()
+
+    @staticmethod
+    def rank_incorrect():
+        print("Le classement d'un joueur doit être un nombre"
+              "entre 1000 et 2900\n")
+        print("Veuillez modifier vos saisies")
+

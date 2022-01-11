@@ -1,3 +1,9 @@
+"""
+>>> a = 2+2
+>>> a
+5
+"""
+
 import datetime
 
 from models.menu import get_menus
@@ -11,7 +17,6 @@ class MainController:
     Global management of the app
     MainController interacts with Menu objects
     """
-
     def __init__(self):
         # instance menus
         self.menus = dict()
@@ -150,11 +155,13 @@ class MainController:
         if choice.upper() == "N":
             for match in t_round.matchs:
                 if match.data[0][1] == 0 and match.data[1][1] == 0:
+                    self.current_menu = self.menus["home"]
                     self.run()
             t_round.get_end_time()
             self.dm.update_round(
                 t_round, "end", t_round.end
             )
+            self.current_menu = self.menus["home"]
             self.run()
         elif choice.upper() == "E":
             self.change_player_rank_during_tournament(tournament)
@@ -470,6 +477,9 @@ class MainController:
                 self.view.alert_creating_an_existing_player(
                     data["Nom"], data["Prénom"], data["Date de naissance"]
                 )
+            elif new_player == "rank_incorrect":
+                self.view.rank_incorrect()
+                self.view.press_key()
             else:
                 self.player = new_player
         self.view.clear()

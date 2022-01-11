@@ -68,7 +68,7 @@ class Crud:
         players[p_ident].firstname = data["Prénom"]
         players[p_ident].rank = int(data["Classement"])
         players[p_ident].birthdate = data["Date de naissance"]
-        players[p_ident].gender = data["Sexe"]
+        players[p_ident].gender = data["Sexe"].upper()
         return players[p_ident]
 
     @staticmethod
