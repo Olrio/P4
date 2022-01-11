@@ -40,7 +40,7 @@ class MainController:
                 eval(self.current_menu.run)
                 for valid_choice in self.current_menu.choices.items():
                     print(valid_choice[1][0])
-                choice = input("Choisissez une option : ").upper()
+                choice = self.view.main_choice()
             if choice == "Q":
                 exit()
             else:

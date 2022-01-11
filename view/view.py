@@ -19,6 +19,10 @@ class View:
         cls.current_player_and_tournament(player, tournament, menu)
 
     @staticmethod
+    def main_choice():
+        return input("Choisissez une option : ").upper()
+
+    @staticmethod
     def clear():
         os.system("cls" if os.name == "nt" else "clear")
 
